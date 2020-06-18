@@ -47,4 +47,21 @@ h2 {
     margin: 10px;
     padding: 5px;
     background-color: seagreen;
+    text-align: center;
+}
+
+img {
+    width: 100%;
+}
+
+#past-searches {
+    padding: 20px;
+    font-size: 20px;
+}
+
+.past-searches {
+    border: slateblue;
+    border-width: 2px;
+    margin: 5px;
+    padding: 5px;
 }
