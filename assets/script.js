@@ -3,7 +3,9 @@ var dateToday = moment().format('L');
 var lat = ""
 var lon = ""
 var weatherCards = $("#weatherCards");
-var pastSearches = []
+var pastSearches = ""
+var cards = $(".card")
+var pastCitySearch
 
 $(document).ready(function(){
 
@@ -15,22 +17,19 @@ $(document).ready(function(){
             method: "GET"
         }).then(function(response){
             console.log(response);
-            $("#uv").text("UV Index: ");
-            var uvDiv = $('<tr>').text(response.current.uvi)
+            var uvDiv = $("#uv")
+            uvDiv.text("UV Index: " + response.current.uvi)
             uvDiv.attr('id', 'uvDiv')
             $("#uv").append(uvDiv)
+            cards.show()
             
             for( var i = 0; i < 5; i++){
                 let add = i + 1
                 let thisAjax = response.daily[i]
-
                 let cardDiv = $("#card" + i)
                 let futureTemp = $("<div>").text("Temp: " + Math.round(((thisAjax.temp.day - 273.15)*1.8 +32)*10)/10 + "F");
-
                 let futureHumidity = $("<div>").text("Humidity: " + thisAjax.humidity + "%");
-
                 let futureDate = $("<h5>").text(moment().add(add, 'day').format('MM/DD/YYYY'));
-                
                 let weatherCode = thisAjax.weather[0].icon
                 let weatherImg = "http://openweathermap.org/img/wn/" + weatherCode + "@2x.png";
 
@@ -44,27 +43,22 @@ $(document).ready(function(){
     }//inside futureCast
 
     function updateLocalStorage(city){
-        pastSearches.push(city);
-        for (let i = 0; i < pastSearches.length; i++) {
-            if (pastSearches[i] === pastSearches[i-1]) pastSearches.splice(i, 1);
-        }
+        pastSearches = city
         localStorage.setItem('pastSearches', pastSearches)
     }
 
     function pullLocalStorage(city){
-        localStorage.getItem('pastSearches')
-        pastSearches.forEach ( function (city) {
+        pastCitySearch = localStorage.getItem('pastSearches')
         let searches = $('<div>');
         searches.attr('class', 'past-searches')
-        searches.text(city);
-        $('#past-searches').append(searches);
-        });
-
-    }
+        searches.text(pastCitySearch);
+        $('#past-searches').prepend(searches);
+        };
 
     function getCurrentWeather(cityName){
         var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=" + APIkey;
         let UVdiv = ('<div>')
+        $('.card').empty()
         $.ajax({
             url: queryURL,
             method: "GET"
@@ -89,22 +83,18 @@ $(document).ready(function(){
 
     $(document).on('click', '.btn', function(event){
         event.preventDefault();
-        $('.card').empty()
         var cityName = $("input").val()
         cityName = cityName.toUpperCase()
         getCurrentWeather(cityName)
     })//everything above this is on click of search button
-
 
     $(document).on('click', '.past-searches', function(event){
         event.preventDefault();
         let pastCitySearch = $(".past-searches").text();
         console.log(pastCitySearch)
         getCurrentWeather(pastCitySearch)
-
-        ;
-
     });
 
-    updateLocalStorage();
+    pullLocalStorage();
+    cards.hide()
 })
