@@ -90,7 +90,7 @@ $(document).ready(function(){
 
     $(document).on('click', '.past-searches', function(event){
         event.preventDefault();
-        let pastCitySearch = $(".past-searches").text();
+        let pastCitySearch = $(this).text();
         console.log(pastCitySearch)
         getCurrentWeather(pastCitySearch)
     });
